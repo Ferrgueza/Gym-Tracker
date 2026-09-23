@@ -126,6 +126,25 @@ form.setform button{
 .btn-auth.secondary{background:none;color:var(--accent);border:1.5px solid var(--accent)}
 .auth-error{font-size:0.78rem;color:#c0392b;margin-top:10px;display:none}
 .auth-loading{font-size:0.78rem;color:var(--muted);margin-top:10px}
+
+.storage-banner{border-radius:10px;padding:10px 12px;font-size:0.78rem;margin-bottom:14px;border:1px solid;line-height:1.4}
+.storage-banner.ok{background:var(--card);color:var(--good);border-color:var(--good)}
+.storage-banner.warn{background:var(--card);color:var(--pending);border-color:var(--pending)}
+
+.config-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.config-header h2{margin:0}
+.config-arrow{color:var(--muted);font-size:0.9rem;transition:transform .15s}
+.config-block{margin-top:14px}
+.config-label{font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.config-day{margin-bottom:10px}
+.config-day-name{font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px}
+.config-pills{display:flex;gap:6px;flex-wrap:wrap}
+.pill-toggle{padding:6px 11px;border-radius:999px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:0.75rem;cursor:pointer}
+.pill-toggle.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.config-goals{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.config-goal-item{display:flex;flex-direction:column;gap:4px}
+.config-goal-item label{font-size:0.75rem;color:var(--muted)}
+.config-goal-item input{padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.85rem}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -167,6 +186,15 @@ form.setform button{
     <div class="kpi-grid" id="kpis"></div>
   </div>
 
+  <div class="card">
+    <div class="config-header" id="configToggle">
+      <h2>⚙️ Configuración</h2>
+      <span class="config-arrow" id="configArrow">▾</span>
+    </div>
+    <div id="storageBanner" style="margin-top:12px;"></div>
+    <div id="configBody" style="display:none;"></div>
+  </div>
+
   <div class="footer-actions">
     <button class="reset-btn" id="resetBtn">Borrar semana seleccionada</button>
     <button class="logout-btn" id="logoutBtn" style="display:none;">Cerrar sesión</button>
@@ -175,15 +203,22 @@ form.setform button{
 
 <script>
 const DAY_DEFS = [
-  {key:"lunes", label:"Lunes", muscles:["Bicep","Hombro","Tricep"]},
-  {key:"martes", label:"Martes", muscles:["Pecho","Espalda"]},
-  {key:"miercoles", label:"Miércoles", muscles:["Bicep","Hombro","Tricep"]},
-  {key:"jueves", label:"Jueves", muscles:["Pecho","Espalda"]},
-  {key:"viernes", label:"Viernes", muscles:["Pierna"]},
-  {key:"sabado", label:"Sábado", muscles:[]},
-  {key:"domingo", label:"Domingo", muscles:[]},
+  {key:"lunes", label:"Lunes"},
+  {key:"martes", label:"Martes"},
+  {key:"miercoles", label:"Miércoles"},
+  {key:"jueves", label:"Jueves"},
+  {key:"viernes", label:"Viernes"},
+  {key:"sabado", label:"Sábado"},
+  {key:"domingo", label:"Domingo"},
 ];
-const GOAL_PER_MUSCLE_WEEK = 18;
+const ALL_MUSCLES = ["Bicep","Hombro","Tricep","Pecho","Espalda","Pierna"];
+const DEFAULT_DAY_MUSCLES = {
+  lunes:["Bicep","Hombro","Tricep"], martes:["Pecho","Espalda"],
+  miercoles:["Bicep","Hombro","Tricep"], jueves:["Pecho","Espalda"],
+  viernes:["Pierna"], sabado:[], domingo:[],
+};
+const DEFAULT_GOALS = { Bicep:18, Hombro:18, Tricep:18, Pecho:18, Espalda:18, Pierna:9 };
+let configOpen = false;
 const STORAGE_KEY = "gymTrackerData_v2";
 const MONTHS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 
@@ -324,6 +359,9 @@ async function loadData(){
     if(raw) data = JSON.parse(raw);
   }catch(e){}
   if(!data.weeks) data.weeks = {};
+  if(!data.params) data.params = {};
+  data.params.dayMuscles = { ...JSON.parse(JSON.stringify(DEFAULT_DAY_MUSCLES)), ...(data.params.dayMuscles||{}) };
+  data.params.goals = { ...DEFAULT_GOALS, ...(data.params.goals||{}) };
 }
 async function saveData(){ await storageSet(STORAGE_KEY, JSON.stringify(data)); }
 
@@ -432,6 +470,7 @@ function renderTabs(){
 function renderDayContent(){
   const container = document.getElementById("dayContent");
   const day = DAY_DEFS.find(d=>d.key===activeDay);
+  const muscles = data.params.dayMuscles[day.key] || [];
   const wd = ensureWeek(activeWeek);
   const d = wd[day.key];
   container.innerHTML = "";
@@ -445,13 +484,13 @@ function renderDayContent(){
 
   const tagsWrap = document.createElement("div");
   tagsWrap.className = "muscle-tags";
-  if(day.muscles.length===0){
+  if(muscles.length===0){
     const t = document.createElement("span");
     t.className = "tag";
     t.textContent = "Descanso";
     tagsWrap.appendChild(t);
   } else {
-    day.muscles.forEach(m=>{
+    muscles.forEach(m=>{
       const t = document.createElement("span");
       t.className = "tag";
       t.textContent = m;
@@ -469,7 +508,7 @@ function renderDayContent(){
   crow.appendChild(sw);
   card.appendChild(crow);
 
-  if(day.muscles.length>0){
+  if(muscles.length>0){
     const form = document.createElement("form");
     form.className = "setform";
     form.innerHTML = `
@@ -481,7 +520,7 @@ function renderDayContent(){
     card.appendChild(form);
 
     const sel = form.querySelector("#muscleSel");
-    day.muscles.forEach(m=>{
+    muscles.forEach(m=>{
       const opt = document.createElement("option");
       opt.value = m; opt.textContent = m;
       sel.appendChild(opt);
@@ -547,10 +586,10 @@ function renderSummary(){
       totals[s.muscle] = (totals[s.muscle]||0) + Number(s.sets||1);
     });
   });
-  const allMuscles = ["Bicep","Hombro","Tricep","Pecho","Espalda","Pierna"];
+  const allMuscles = ALL_MUSCLES;
   allMuscles.forEach(m=>{
     const count = totals[m] || 0;
-    const goal = m==="Pierna" ? 9 : GOAL_PER_MUSCLE_WEEK;
+    const goal = data.params.goals[m] || 1;
     const pct = Math.min(100, Math.round((count/goal)*100));
     const item = document.createElement("div");
     item.className = "summary-item";
@@ -577,7 +616,7 @@ function weekTotalSets(wd){
   DAY_DEFS.forEach(d=> wd[d.key].sets.forEach(s=> sum += Number(s.sets||1)));
   return sum;
 }
-function totalGoalPerWeek(){ return GOAL_PER_MUSCLE_WEEK*5 + 9; }
+function totalGoalPerWeek(){ return ALL_MUSCLES.reduce((sum,m)=> sum + (data.params.goals[m]||0), 0); }
 
 function renderKPIs(){
   const el = document.getElementById("kpis");
@@ -623,12 +662,80 @@ function renderKPIs(){
   });
 }
 
+function renderStorageBanner(){
+  const el = document.getElementById("storageBanner");
+  if(FIREBASE_CONFIGURED && currentUser){
+    el.className = "storage-banner ok";
+    el.innerHTML = `☁️ Sesión iniciada como <strong>${escapeHtml(currentUser.email)}</strong> — tus datos se guardan en la nube y se ven igual en cualquier dispositivo.`;
+  } else {
+    el.className = "storage-banner warn";
+    el.textContent = "💾 Guardando solo en este navegador — no se comparte con otros dispositivos.";
+  }
+}
+
+function renderConfig(){
+  const body = document.getElementById("configBody");
+  document.getElementById("configArrow").textContent = configOpen ? "▴" : "▾";
+  if(!configOpen){ body.style.display = "none"; return; }
+  body.style.display = "block";
+
+  let html = `<div class="config-block"><div class="config-label">Rutina por día</div>`;
+  DAY_DEFS.forEach(day=>{
+    const muscles = data.params.dayMuscles[day.key] || [];
+    html += `<div class="config-day"><span class="config-day-name">${day.label}</span><div class="config-pills">`;
+    ALL_MUSCLES.forEach(m=>{
+      const active = muscles.includes(m);
+      html += `<button type="button" class="pill-toggle${active?' active':''}" data-day="${day.key}" data-muscle="${m}">${m}</button>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="config-block"><div class="config-label">Objetivo semanal de sets por músculo</div><div class="config-goals">`;
+  ALL_MUSCLES.forEach(m=>{
+    html += `<div class="config-goal-item"><label>${m}</label><input type="number" min="1" class="goal-input" data-muscle="${m}" value="${data.params.goals[m]}"></div>`;
+  });
+  html += `</div></div>`;
+
+  html += `<button class="reset-btn" id="resetConfigBtn" style="margin-top:4px;">Restablecer valores por defecto</button>`;
+
+  body.innerHTML = html;
+
+  body.querySelectorAll(".pill-toggle").forEach(btn=>{
+    btn.onclick = ()=>{
+      const dayKey = btn.dataset.day, m = btn.dataset.muscle;
+      const arr = data.params.dayMuscles[dayKey];
+      const idx = arr.indexOf(m);
+      if(idx>=0) arr.splice(idx,1); else arr.push(m);
+      saveData();
+      renderAll();
+    };
+  });
+  body.querySelectorAll(".goal-input").forEach(inp=>{
+    inp.onchange = ()=>{
+      data.params.goals[inp.dataset.muscle] = Number(inp.value)||1;
+      saveData();
+      renderAll();
+    };
+  });
+  document.getElementById("resetConfigBtn").onclick = ()=>{
+    if(confirm("¿Restablecer la rutina y los objetivos a los valores por defecto?")){
+      data.params.dayMuscles = JSON.parse(JSON.stringify(DEFAULT_DAY_MUSCLES));
+      data.params.goals = { ...DEFAULT_GOALS };
+      saveData();
+      renderAll();
+    }
+  };
+}
+
 function renderAll(){
+  renderStorageBanner();
   renderWeeks();
   renderTabs();
   renderDayContent();
   renderSummary();
   renderKPIs();
+  renderConfig();
 }
 
 document.getElementById("resetBtn").onclick = ()=>{
@@ -640,6 +747,7 @@ document.getElementById("resetBtn").onclick = ()=>{
   }
 };
 document.getElementById("logoutBtn").onclick = ()=>{ if(auth) auth.signOut(); };
+document.getElementById("configToggle").onclick = ()=>{ configOpen = !configOpen; renderConfig(); };
 
 async function init(){
   if(FIREBASE_CONFIGURED){
