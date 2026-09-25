@@ -11,11 +11,15 @@
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <title>Mi Rutina de Gym</title>
 <style>
 :root{
   --bg:#f5f4f1; --card:#ffffff; --text:#1c1b19; --muted:#6b6862;
   --accent:#d1521a; --accent2:#1c1b19; --border:#e4e1da; --good:#3a7d44; --pending:#c98a1a;
+  --font-display:"Oswald","Segoe UI",system-ui,sans-serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -39,7 +43,7 @@ body{
 }
 .wrap{max-width:720px;margin:0 auto;padding:20px 16px 60px}
 header{margin-bottom:14px}
-h1{font-size:1.4rem;margin:0 0 4px;letter-spacing:-0.02em}
+h1{font-family:var(--font-display);font-size:1.6rem;font-weight:700;margin:0 0 4px;letter-spacing:0.01em;text-transform:uppercase}
 .sub{color:var(--muted);font-size:0.9rem;margin:0}
 
 .week-label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:16px 0 6px}
@@ -52,7 +56,7 @@ h1{font-size:1.4rem;margin:0 0 4px;letter-spacing:-0.02em}
   background:var(--card);color:var(--text);font-size:0.78rem;cursor:pointer;white-space:nowrap;text-align:left;
 }
 .weekchip .tag-now{display:block;font-size:0.65rem;color:var(--accent);font-weight:700;margin-top:2px}
-.weekchip.active{background:var(--accent2);border-color:var(--accent2);color:var(--bg);font-weight:600}
+.weekchip.active{background:linear-gradient(135deg, var(--accent2), #000);border-color:var(--accent2);color:var(--bg);font-weight:600}
 .weekchip.active .tag-now{color:var(--bg)}
 .weekchip .wdot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--good);margin-left:5px;vertical-align:middle}
 .weekchip.add{border-style:dashed;color:var(--muted);font-weight:700;text-align:center}
@@ -64,13 +68,16 @@ h1{font-size:1.4rem;margin:0 0 4px;letter-spacing:-0.02em}
   flex:0 0 auto;padding:8px 14px;border-radius:999px;border:1px solid var(--border);
   background:var(--card);color:var(--text);font-size:0.85rem;cursor:pointer;white-space:nowrap;
 }
-.tab.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.tab.active{background:linear-gradient(135deg, var(--accent), var(--accent2));border-color:var(--accent);color:#fff;font-weight:600}
+.tab.today:not(.active){border-color:var(--accent);color:var(--accent);font-weight:600}
 .tab .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-left:6px;vertical-align:middle}
 
 .card{
-  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  background:linear-gradient(160deg, var(--card) 0%, var(--bg) 140%);
+  border:1px solid var(--border);border-radius:14px;
   padding:16px;margin-bottom:14px;
 }
+.card h2{font-family:var(--font-display);font-weight:600;letter-spacing:0.01em}
 .card h2{font-size:1.05rem;margin:0 0 10px}
 .muscle-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .tag{background:var(--bg);border:1px solid var(--border);color:var(--muted);font-size:0.75rem;padding:3px 9px;border-radius:999px}
@@ -98,9 +105,12 @@ form.setform select, form.setform input{
   padding:9px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:0.85rem;width:100%;
 }
 form.setform button{
-  background:var(--accent2);color:var(--bg);border:none;border-radius:8px;padding:9px 12px;font-size:0.85rem;cursor:pointer;font-weight:600;
+  background:linear-gradient(135deg, var(--accent2), #000);color:var(--bg);border:none;border-radius:8px;padding:9px 12px;font-size:0.85rem;cursor:pointer;font-weight:600;
 }
 .setlist{display:flex;flex-direction:column;gap:6px}
+.setlist.compact{gap:3px}
+.setlist.compact .setitem{padding:4px 9px;font-size:0.76rem}
+.compact-toggle{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:5px 10px;font-size:0.72rem;cursor:pointer}
 .setitem{
   display:flex;align-items:center;justify-content:space-between;background:var(--bg);
   border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:0.85rem;
@@ -110,17 +120,21 @@ form.setform button{
 .empty{color:var(--muted);font-size:0.85rem;padding:6px 2px}
 
 .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.summary-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
-.summary-item .name{font-size:0.85rem;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between}
-.summary-item .name span{color:var(--muted);font-weight:400}
-.bar{height:7px;border-radius:999px;background:var(--border);overflow:hidden}
-.bar-fill{height:100%;background:var(--accent);border-radius:999px}
-.bar-fill.done{background:var(--good)}
+.summary-item{
+  background:linear-gradient(160deg, var(--card) 0%, var(--bg) 140%);
+  border:1px solid var(--border);border-radius:10px;padding:10px 12px;
+  display:flex;align-items:center;gap:12px;
+}
+.summary-info{min-width:0}
+.summary-name{font-size:0.85rem;font-weight:600;margin-bottom:2px}
+.summary-count{font-size:0.75rem;color:var(--muted)}
+.ring-wrap{position:relative;flex:0 0 auto;width:58px;height:58px}
+.ring-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:700;color:var(--text)}
 
 .rest{color:var(--muted);font-size:0.9rem;padding:8px 0}
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.kpi-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center}
-.kpi-value{font-size:1.5rem;font-weight:700;color:var(--accent)}
+.kpi-item{background:linear-gradient(160deg, var(--card) 0%, var(--bg) 140%);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center}
+.kpi-value{font-family:var(--font-display);font-size:1.7rem;font-weight:700;color:var(--accent)}
 .kpi-label{font-size:0.72rem;color:var(--muted);margin-top:4px;line-height:1.2}
 .footer-actions{display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap}
 .reset-btn{background:none;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 14px;font-size:0.8rem;cursor:pointer}
@@ -131,9 +145,11 @@ form.setform button{
 .auth-card h1{font-size:1.3rem;margin:0 0 6px}
 .auth-card p{font-size:0.85rem;color:var(--muted);margin:0 0 18px;line-height:1.4}
 .auth-card input{width:100%;padding:11px 13px;margin-bottom:10px;border:1px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;color:var(--text);background:var(--bg)}
-.btn-auth{width:100%;padding:11px;border-radius:10px;border:none;font-size:0.9rem;font-weight:700;background:var(--accent2);color:var(--bg);margin-top:4px;cursor:pointer}
+.auth-card h1{font-family:var(--font-display)}
+.btn-auth{width:100%;padding:11px;border-radius:10px;border:none;font-size:0.9rem;font-weight:700;background:linear-gradient(135deg, var(--accent2), #000);color:var(--bg);margin-top:4px;cursor:pointer}
 .btn-auth.secondary{background:none;color:var(--accent);border:1.5px solid var(--accent)}
 .auth-error{font-size:0.78rem;color:#c0392b;margin-top:10px;display:none}
+.auth-link{background:none;border:none;color:var(--accent);font-size:0.8rem;cursor:pointer;margin-top:12px;text-decoration:underline;padding:0}
 .auth-loading{font-size:0.78rem;color:var(--muted);margin-top:10px}
 
 .storage-banner{border-radius:10px;padding:10px 12px;font-size:0.78rem;margin-bottom:14px;border:1px solid;line-height:1.4}
@@ -149,7 +165,8 @@ form.setform button{
 .config-day-name{font-size:0.85rem;font-weight:600;display:block;margin-bottom:6px}
 .config-pills{display:flex;gap:6px;flex-wrap:wrap}
 .pill-toggle{padding:6px 11px;border-radius:999px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-size:0.75rem;cursor:pointer}
-.pill-toggle.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.pill-toggle.active{background:linear-gradient(135deg, var(--accent), var(--accent2));border-color:var(--accent);color:#fff;font-weight:600}
+.color-input{width:48px;height:36px;border:1px solid var(--border);border-radius:8px;background:none;padding:2px;cursor:pointer}
 .config-goals{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .config-goal-item{display:flex;flex-direction:column;gap:4px}
 .config-goal-item label{font-size:0.75rem;color:var(--muted)}
@@ -161,6 +178,13 @@ form.setform button{
 .save-error{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#c0392b;color:#fff;
   padding:10px 16px;border-radius:10px;font-size:0.82rem;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:50;
   display:none;max-width:90%;text-align:center;}
+
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.confirm-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 20px;max-width:340px;width:100%;text-align:center;}
+.confirm-box p{font-size:0.9rem;margin:0 0 18px;color:var(--text);line-height:1.4;}
+.confirm-actions{display:flex;gap:10px}
+.confirm-actions button{flex:1}
+.confirm-ok-btn{background:#c0392b;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:0.85rem;font-weight:700;cursor:pointer}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -175,6 +199,7 @@ form.setform button{
     <input type="password" id="auth-password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="current-password">
     <button class="btn-auth" id="auth-login">Entrar</button>
     <button class="btn-auth secondary" id="auth-signup">Crear cuenta nueva</button>
+    <button type="button" class="auth-link" id="auth-forgot">¿Olvidaste tu contraseña?</button>
     <p class="auth-error" id="auth-error"></p>
     <p class="auth-loading" id="auth-loading" style="display:none;">Conectando…</p>
   </div>
@@ -228,6 +253,16 @@ form.setform button{
 </div>
 <div id="saveError" class="save-error"></div>
 
+<div id="confirmModal" class="confirm-overlay" style="display:none;">
+  <div class="confirm-box">
+    <p id="confirmText"></p>
+    <div class="confirm-actions">
+      <button type="button" id="confirmCancel" class="reset-btn">Cancelar</button>
+      <button type="button" id="confirmOk" class="confirm-ok-btn">Sí, borrar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const DAY_DEFS = [
   {key:"lunes", label:"Lunes"},
@@ -246,6 +281,7 @@ const DEFAULT_DAY_MUSCLES = {
 };
 const DEFAULT_GOALS = { Bicep:18, Hombro:18, Tricep:18, Pecho:18, Espalda:18, Pierna:9 };
 let configOpen = false;
+let compactSets = false;
 const STORAGE_KEY = "gymTrackerData_v2";
 const MONTHS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 
@@ -279,6 +315,7 @@ function traducirErrorAuth(code) {
     "auth/weak-password": "La contraseña necesita al menos 6 caracteres.",
     "auth/missing-password": "Escribe una contraseña.",
     "auth/too-many-requests": "Demasiados intentos. Espera un poco y vuelve a probar.",
+    "auth/missing-email": "Escribe tu correo arriba primero, y luego pulsa este enlace.",
   };
   return map[code] || "Ha ocurrido un error. Inténtalo de nuevo.";
 }
@@ -305,7 +342,13 @@ function setupAuthHandlers(){
     document.getElementById("auth-signup").disabled = busy;
   }
   function showErr(code){
+    errEl.style.color = "#c0392b";
     errEl.textContent = traducirErrorAuth(code);
+    errEl.style.display = "block";
+  }
+  function showOk(msg){
+    errEl.style.color = "var(--good)";
+    errEl.textContent = msg;
     errEl.style.display = "block";
   }
 
@@ -321,6 +364,17 @@ function setupAuthHandlers(){
     setBusy(true);
     try{ await auth.createUserWithEmailAndPassword(emailEl.value.trim(), passEl.value); }
     catch(e){ showErr(e.code); }
+    finally{ setBusy(false); }
+  };
+  document.getElementById("auth-forgot").onclick = async ()=>{
+    errEl.style.display = "none";
+    const email = emailEl.value.trim();
+    if(!email){ showErr("auth/missing-email"); return; }
+    setBusy(true);
+    try{
+      await auth.sendPasswordResetEmail(email);
+      showOk("Te hemos enviado un correo para restablecer tu contraseña. Revisa también la carpeta de spam.");
+    }catch(e){ showErr(e.code); }
     finally{ setBusy(false); }
   };
 }
@@ -343,6 +397,23 @@ async function storageSet(key, value){
     }catch(e){ console.error("Error guardando en Firestore", e); return false; }
   }
   try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
+}
+
+function askConfirm(message){
+  return new Promise((resolve)=>{
+    const overlay = document.getElementById("confirmModal");
+    document.getElementById("confirmText").textContent = message;
+    overlay.style.display = "flex";
+    const okBtn = document.getElementById("confirmOk");
+    const cancelBtn = document.getElementById("confirmCancel");
+    const cleanup = (result)=>{
+      overlay.style.display = "none";
+      okBtn.onclick = null; cancelBtn.onclick = null;
+      resolve(result);
+    };
+    okBtn.onclick = ()=> cleanup(true);
+    cancelBtn.onclick = ()=> cleanup(false);
+  });
 }
 
 function showSaveError(msg){
@@ -397,6 +468,8 @@ async function loadData(){
   if(!data.params) data.params = {};
   data.params.dayMuscles = { ...JSON.parse(JSON.stringify(DEFAULT_DAY_MUSCLES)), ...(data.params.dayMuscles||{}) };
   data.params.goals = { ...DEFAULT_GOALS, ...(data.params.goals||{}) };
+  data.params.theme = data.params.theme || "system";
+  data.params.accentColor = data.params.accentColor || "#d1521a";
 }
 async function saveData(){
   const ok = await storageSet(STORAGE_KEY, JSON.stringify(data));
@@ -420,6 +493,7 @@ let activeWeek = CURRENT_WEEK_KEY;
 let foldersOpen = false;
 const jsDay = today.getDay();
 let activeDay = DAY_DEFS[jsDay===0?6:jsDay-1].key;
+const TODAY_DAY_KEY = activeDay;
 
 function renderWeeks(){
   const container = document.getElementById("weeksContainer");
@@ -493,8 +567,9 @@ function renderTabs(){
   const wd = ensureWeek(activeWeek);
   DAY_DEFS.forEach(d=>{
     const btn = document.createElement("button");
-    btn.className = "tab" + (d.key===activeDay ? " active":"");
-    btn.textContent = d.label;
+    const isToday = d.key===TODAY_DAY_KEY && activeWeek===CURRENT_WEEK_KEY;
+    btn.className = "tab" + (d.key===activeDay ? " active":"") + (isToday ? " today":"");
+    btn.textContent = d.label + (isToday ? " •" : "");
     if(wd[d.key].creatine){
       const dot = document.createElement("span");
       dot.className = "dot";
@@ -516,9 +591,21 @@ function renderDayContent(){
   const card = document.createElement("div");
   card.className = "card";
 
+  const headerRow = document.createElement("div");
+  headerRow.style.cssText = "display:flex;justify-content:space-between;align-items:center;";
   const h2 = document.createElement("h2");
   h2.textContent = day.label;
-  card.appendChild(h2);
+  h2.style.margin = "0";
+  headerRow.appendChild(h2);
+  if(muscles.length>0){
+    const compactBtn = document.createElement("button");
+    compactBtn.type = "button";
+    compactBtn.className = "compact-toggle";
+    compactBtn.textContent = compactSets ? "▤ Normal" : "☰ Compacto";
+    compactBtn.onclick = ()=>{ compactSets = !compactSets; renderDayContent(); };
+    headerRow.appendChild(compactBtn);
+  }
+  card.appendChild(headerRow);
 
   const tagsWrap = document.createElement("div");
   tagsWrap.className = "muscle-tags";
@@ -577,7 +664,7 @@ function renderDayContent(){
     };
 
     const listWrap = document.createElement("div");
-    listWrap.className = "setlist";
+    listWrap.className = "setlist" + (compactSets ? " compact" : "");
     if(d.sets.length===0){
       const e = document.createElement("div");
       e.className = "empty";
@@ -616,6 +703,20 @@ function escapeHtml(str){
   return div.innerHTML;
 }
 
+function circleRing(pct, color){
+  const size=58, sw=6, r=(size-sw)/2, c=2*Math.PI*r;
+  const off = c * (1 - Math.min(100,pct)/100);
+  return `<div class="ring-wrap">
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${sw}"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
+        stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"
+        transform="rotate(-90 ${size/2} ${size/2})"/>
+    </svg>
+    <span class="ring-pct">${Math.round(Math.min(100,pct))}%</span>
+  </div>`;
+}
+
 function renderSummary(){
   const summary = document.getElementById("summary");
   summary.innerHTML = "";
@@ -630,23 +731,23 @@ function renderSummary(){
   allMuscles.forEach(m=>{
     const count = totals[m] || 0;
     const goal = data.params.goals[m] || 1;
-    const pct = Math.min(100, Math.round((count/goal)*100));
+    const pct = (count/goal)*100;
     const item = document.createElement("div");
     item.className = "summary-item";
     item.innerHTML = `
-      <div class="name">${m} <span>${count}/${goal}</span></div>
-      <div class="bar"><div class="bar-fill ${count>=goal?'done':''}" style="width:${pct}%"></div></div>
+      ${circleRing(pct, count>=goal ? "var(--good)" : "var(--accent)")}
+      <div class="summary-info"><div class="summary-name">${m}</div><div class="summary-count">${count}/${goal} sets</div></div>
     `;
     summary.appendChild(item);
   });
 
   const creatineDays = DAY_DEFS.filter(d=> wd[d.key].creatine).length;
-  const cPct = Math.round((creatineDays/7)*100);
+  const cPct = (creatineDays/7)*100;
   const cItem = document.createElement("div");
   cItem.className = "summary-item";
   cItem.innerHTML = `
-    <div class="name">💊 Creatina <span>${creatineDays}/7 días</span></div>
-    <div class="bar"><div class="bar-fill ${creatineDays>=7?'done':''}" style="width:${cPct}%"></div></div>
+    ${circleRing(cPct, creatineDays>=7 ? "var(--good)" : "var(--accent)")}
+    <div class="summary-info"><div class="summary-name">💊 Creatina</div><div class="summary-count">${creatineDays}/7 días</div></div>
   `;
   summary.appendChild(cItem);
 }
@@ -657,6 +758,17 @@ function weekTotalSets(wd){
   return sum;
 }
 function totalGoalPerWeek(){ return ALL_MUSCLES.reduce((sum,m)=> sum + (data.params.goals[m]||0), 0); }
+
+function weekVolume(wd){
+  let vol = 0;
+  DAY_DEFS.forEach(d=> wd[d.key].sets.forEach(s=>{
+    const reps = Number(s.reps);
+    if(s.weight!==null && s.weight!==undefined && !isNaN(reps) && reps>0){
+      vol += s.weight * reps * Number(s.sets||1);
+    }
+  }));
+  return vol;
+}
 
 function renderKPIs(){
   const el = document.getElementById("kpis");
@@ -719,7 +831,19 @@ function renderConfig(){
   if(!configOpen){ body.style.display = "none"; return; }
   body.style.display = "block";
 
-  let html = `<div class="config-block"><div class="config-label">Rutina por día</div>`;
+  let html = `<div class="config-block"><div class="config-label">Apariencia</div>
+    <div class="config-pills" style="margin-bottom:12px;">
+      <button type="button" class="pill-toggle${data.params.theme==='system'?' active':''}" data-theme-choice="system">Sistema</button>
+      <button type="button" class="pill-toggle${data.params.theme==='light'?' active':''}" data-theme-choice="light">Claro</button>
+      <button type="button" class="pill-toggle${data.params.theme==='dark'?' active':''}" data-theme-choice="dark">Oscuro</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <input type="color" id="accentColorInput" class="color-input" value="${data.params.accentColor}">
+      <span style="font-size:0.8rem;color:var(--muted);">Color principal de la app</span>
+    </div>
+  </div>`;
+
+  html += `<div class="config-block"><div class="config-label">Rutina por día</div>`;
   DAY_DEFS.forEach(day=>{
     const muscles = data.params.dayMuscles[day.key] || [];
     html += `<div class="config-day"><span class="config-day-name">${day.label}</span><div class="config-pills">`;
@@ -741,7 +865,20 @@ function renderConfig(){
 
   body.innerHTML = html;
 
-  body.querySelectorAll(".pill-toggle").forEach(btn=>{
+  body.querySelectorAll("[data-theme-choice]").forEach(btn=>{
+    btn.onclick = ()=>{
+      data.params.theme = btn.dataset.themeChoice;
+      saveData();
+      renderAll();
+    };
+  });
+  document.getElementById("accentColorInput").onchange = (e)=>{
+    data.params.accentColor = e.target.value;
+    saveData();
+    renderAll();
+  };
+
+  body.querySelectorAll(".pill-toggle[data-day]").forEach(btn=>{
     btn.onclick = ()=>{
       const dayKey = btn.dataset.day, m = btn.dataset.muscle;
       const arr = data.params.dayMuscles[dayKey];
@@ -758,10 +895,13 @@ function renderConfig(){
       renderAll();
     };
   });
-  document.getElementById("resetConfigBtn").onclick = ()=>{
-    if(confirm("¿Restablecer la rutina y los objetivos a los valores por defecto?")){
+  document.getElementById("resetConfigBtn").onclick = async ()=>{
+    const ok = await askConfirm("¿Restablecer la rutina y los objetivos a los valores por defecto?");
+    if(ok){
       data.params.dayMuscles = JSON.parse(JSON.stringify(DEFAULT_DAY_MUSCLES));
       data.params.goals = { ...DEFAULT_GOALS };
+      data.params.theme = "system";
+      data.params.accentColor = "#d1521a";
       saveData();
       renderAll();
     }
@@ -859,7 +999,16 @@ function renderWeightEvolution(){
   chartEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;"><path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>${dots}${labels}</svg>`;
 }
 
+function applyTheme(){
+  const root = document.documentElement;
+  if(data.params.theme === "light") root.setAttribute("data-theme","light");
+  else if(data.params.theme === "dark") root.setAttribute("data-theme","dark");
+  else root.removeAttribute("data-theme");
+  root.style.setProperty("--accent", data.params.accentColor);
+}
+
 function renderAll(){
+  applyTheme();
   renderStorageBanner();
   renderWeeks();
   renderTabs();
@@ -871,9 +1020,10 @@ function renderAll(){
   renderConfig();
 }
 
-document.getElementById("resetBtn").onclick = ()=>{
+document.getElementById("resetBtn").onclick = async ()=>{
   const w = WEEKS.find(w=>w.key===activeWeek);
-  if(confirm(`¿Borrar todos los datos de la semana ${w.label}?`)){
+  const ok = await askConfirm(`¿Borrar todos los datos de la semana ${w.label}?`);
+  if(ok){
     data.weeks[activeWeek] = freshWeek();
     saveData();
     renderAll();
